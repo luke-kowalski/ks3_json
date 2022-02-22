@@ -9,7 +9,7 @@ MySql_USERNAME = config.get("SERVER_CONN", "MySql_USERNAME")
 MySql_PASSWORD = config.get("SERVER_CONN", "MySql_PASSWORD")
 MySql_DATABASE = config.get("SERVER_CONN", "MySql_DATABASE")
 
-JSON_OUTPUT_TARGET = config.get("JSON", "JSON_OUTPUT_TARGET")
+JSON_FROM_MYSQL_OUTPUT_TARGET = config.get("JSON", "JSON_FROM_MYSQL_OUTPUT_TARGET")
 
 
 def dump_json_from_mysql_to_file():
@@ -25,10 +25,13 @@ def dump_json_from_mysql_to_file():
         
     else:
         mycursor = connection.cursor(dictionary=True)
-        mycursor.execute("SELECT o.Symbol, o.JSONObject FROM Objects o WHERE o.Symbol LIKE 'S\_%' limit 2")
+        mycursor.execute("SELECT o.Symbol, o.JSONObject FROM Objects o WHERE o.Symbol LIKE 'S\_%'")
         myresult = mycursor.fetchall()
         for data in myresult:
             filename = data['Symbol'] + '.json' 
-            with open(JSON_OUTPUT_TARGET + filename, 'w',) as f:
+            with open(JSON_FROM_MYSQL_OUTPUT_TARGET + filename, 'w',) as f:
                 f.write(data['JSONObject'])
-                print(filename)
+                print(f'Utworzono: {JSON_FROM_MYSQL_OUTPUT_TARGET}{filename}')
+        connection.close()
+                
+dump_json_from_mysql_to_file()
